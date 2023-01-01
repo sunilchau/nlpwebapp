@@ -7,8 +7,14 @@
 <body>
     <form action = "/perform_ner" method = "post">
         <label>Type your text here</label><br>
-        <textarea></textarea><br>
+        <textarea name = "ner_text"></textarea><br>
         <input type = "submit" value = "Perform NER">
     </form>
+
+    {% if response %}
+        {% for i in response['entities']: %}
+            <p>{{i['name']+"==> "+i['category']}}</p>
+        {% endfor %}
+    {% endif %}
 </body>
 </html>

@@ -1,7 +1,13 @@
-from flask import Flask, render_template, request,redirect
+from flask import Flask, render_template, request, redirect, session
+
+
 from db import Database
+import api
 
 app = Flask(__name__)
+app.config['SESSION_TYPE'] = 'memcached'
+app.config['SECRET_KEY'] = 'super secret key'
+
 dbo = Database()
 
 
@@ -38,6 +44,7 @@ def perform_login():
 
     response = dbo.search(email, password)
     if response:
+        session['logged_in'] = 1
         return redirect("/profile")
     else:
         return render_template('login.html', message="incorrect email/password")
@@ -45,14 +52,29 @@ def perform_login():
 
 @app.route("/profile")
 def profile():
-    return render_template('profile.html')
+    if session:
+        return render_template('profile.html')
+    else:
+        return redirect('/')
+
 
 @app.route("/ner")
 def ner():
-    return render_template('ner.html')
+    if session:
+        return render_template('ner.html')
+    else:
+        return redirect('/')
 
-@app.route("/perform_ner", methods =['post'])
+
+@app.route("/perform_ner", methods=['post'])
 def perform_ner():
-    return "Yeha NER Hoga"
+    if session:
+        nertext = request.form.get("ner_text")
+        response = api.ner(nertext)
+        print(response)
+        return render_template('ner.html', response=response)
+    else:
+        return redirect('/')
+
 
 app.run(debug=True)
