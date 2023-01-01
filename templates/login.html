@@ -7,6 +7,10 @@
 <body>
     <h1 style = 'color:green'> NLP App </h1>
     <h3> Login Here </h3>
+
+    {% if message %}
+        <p style="color:gree">{{message}}</p>
+    {% endif %}
     <form>
         <label>Email:</label><br>
         <input type = "email"><br><br>
